@@ -29,6 +29,7 @@ namespace FirstCatering.BackService.Models
     public class EmployeeNoPin
     {
         [Key]
+        [Required]
         [MinLength(4)]
         public string CardIdNumber { get; set; }
 
