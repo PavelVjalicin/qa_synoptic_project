@@ -15,16 +15,16 @@ namespace FirstCatering.BackService.Controllers
     public class IdCardController : Controller
     {
 
-        private bool cardIdIsValid(string cardId)
-        {
-            Regex r = new Regex("^[a-zA-Z0-9]*$");
-            return r.IsMatch(cardId);
-        }
-
         DataBaseContext _context;
         public IdCardController(DataBaseContext context)
         {
             _context = context;
+        }
+
+        private bool cardIdIsValid(string cardId)
+        {
+            Regex r = new Regex("^[a-zA-Z0-9]*$");
+            return r.IsMatch(cardId);
         }
 
         // GET api/IdCard
@@ -44,18 +44,17 @@ namespace FirstCatering.BackService.Controllers
         // Returns 404 status code with error message if employee not found
         // GET api/IdCard/:id
         [HttpGet("{cardId}")]
-        [ProducesResponseType(typeof(Employee), 200)]
-        [ProducesResponseType(400)]
+        [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         public IActionResult Get(string cardId)
         {
             var result = _context.Employees.Find(cardId);
             if(result != null)
             {
-                return Ok(result);
+                return Ok("Welcome " + result.Name);
             } else
             {
-                return NotFound("No employee found with this card id");
+                return NotFound("User must register this card before proceeding.");
             }
         }
         
@@ -67,7 +66,7 @@ namespace FirstCatering.BackService.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public IActionResult Post([FromBody]EmployeeNoPin employeeNoPin)
+        public IActionResult Post([FromBody]EmployeeInputData employeeNoPin)
         {   
             if (!ModelState.IsValid)
             {
@@ -97,7 +96,7 @@ namespace FirstCatering.BackService.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult Put( [FromBody] EmployeeNoPin employeeNoPin)
+        public IActionResult Put( [FromBody] EmployeeInputData employeeNoPin)
         { 
             if (!ModelState.IsValid)
             {
@@ -124,7 +123,6 @@ namespace FirstCatering.BackService.Controllers
         [HttpDelete("{cardId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        [ProducesResponseType(404)]
         public IActionResult Delete(string cardId) {
             var employee = _context.Employees.Find(cardId);
             

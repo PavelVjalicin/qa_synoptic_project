@@ -6,40 +6,47 @@ using System.Threading.Tasks;
 
 namespace FirstCatering.BackService.Models
 {
-	public class Employee : EmployeeNoPin 
+	public class Employee : EmployeeInputData 
 	{
 
         public Employee() { }
 
-        public Employee(EmployeeNoPin employeeNoPin)
+        public Employee(EmployeeInputData employeeNoPin)
         {
-            UpdateFromEmployeeNoPin(this, employeeNoPin);
+            Update(employeeNoPin);
+            this.Credit = 0;
         }
 
-        public void Update(EmployeeNoPin employeeNoPin)
+        public void Update(EmployeeInputData employeeNoPin)
         {
-            UpdateFromEmployeeNoPin(this, employeeNoPin);
-        }
-
-        [Required]
-        public string PinNumber { get; set; }
-
-        private static void UpdateFromEmployeeNoPin(Employee employee,EmployeeNoPin employeeNoPin)
-        {
-            employee.CardIdNumber = employeeNoPin.CardIdNumber;
-            employee.EmployeeId = employeeNoPin.EmployeeId;
-            employee.Name = employeeNoPin.Name;
-            employee.Email = employeeNoPin.Email;
-            employee.MobileNumber = employeeNoPin.MobileNumber;
+            this.CardIdNumber = employeeNoPin.CardIdNumber;
+            this.EmployeeId = employeeNoPin.EmployeeId;
+            this.Name = employeeNoPin.Name;
+            this.Email = employeeNoPin.Email;
+            this.MobileNumber = employeeNoPin.MobileNumber;
             var cardId = employeeNoPin.CardIdNumber;
 
             //Takes last 4 digits of cardID
-            var pin = cardId.Substring(cardId.Length - 4);
-            employee.PinNumber = pin;
+            var pin = this.GetPinNumber(cardId);
+            this.PinNumber = pin;
         }
-	}
 
-    public class EmployeeNoPin
+        [Required]
+        public string PinNumber { get; private set; }
+
+        private string GetPinNumber(string cardIdNumber)
+        {
+            var pin = cardIdNumber.Substring(cardIdNumber.Length - 4);
+            return pin;
+        }
+
+        [Required]
+        public decimal Credit { get; set; }
+    }
+
+    
+
+    public class EmployeeInputData
     {
         [Key]
         [Required]
@@ -58,5 +65,6 @@ namespace FirstCatering.BackService.Models
 
         [Required]
         public string MobileNumber { get; set; }
+
     }
 }
