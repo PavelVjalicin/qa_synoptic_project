@@ -46,7 +46,7 @@ namespace FirstCatering.BackService
 			{
 
 				app.UseSwaggerUI(options =>
-						options.SwaggerEndpoint("/swagger/v1/swagger.json", "Trip Tracker v1")
+						options.SwaggerEndpoint("/swagger/v1/swagger.json", "First Catering Ltd v1")
 				);
 
 			}
