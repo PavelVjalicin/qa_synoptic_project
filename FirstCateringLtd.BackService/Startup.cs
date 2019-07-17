@@ -10,9 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Swagger;
-using FirstCatering.BackService.Data;
+using FirstCateringLtd.BackService.Data;
 
-namespace FirstCatering.BackService
+namespace FirstCateringLtd.BackService
 {
 	public class Startup
 	{
@@ -29,7 +29,7 @@ namespace FirstCatering.BackService
 			//services.AddTransient<Models.Repository>();
 			services.AddMvc();
 
-      services.AddDbContext<DataBaseContext>(options=> options.UseSqlite("Data Source=CateringDatabase.db"));
+      services.AddDbContext<DatabaseContext>(options=> options.UseSqlite("Data Source=CateringDatabase.db"));
 
 			services.AddSwaggerGen(options =>
 					options.SwaggerDoc("v1", new Info { Title = "First Catering Ltd", Version = "v1" })
@@ -58,7 +58,7 @@ namespace FirstCatering.BackService
 
 			app.UseMvc();
 
-			DataBaseContext.SeedData(app.ApplicationServices);
+			DatabaseContext.SeedData(app.ApplicationServices);
 
 		}
 	}

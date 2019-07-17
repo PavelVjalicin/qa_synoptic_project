@@ -2,16 +2,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
-using FirstCatering.BackService.Models;
+using FirstCateringLtd.BackService.Models;
 
-namespace FirstCatering.BackService.Data
+namespace FirstCateringLtd.BackService.Data
 {
     //Main database context that outlines the interface for any kind of database that one might use.
-	public class DataBaseContext : DbContext
+	public class DatabaseContext : DbContext
 	{
-		public DataBaseContext(DbContextOptions<DataBaseContext> options) : base(options){}
+		public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options){}
 
-		public DataBaseContext(){}
+		public DatabaseContext(){}
 
 		public DbSet<Employee> Employees { get; set; }
 
@@ -21,7 +21,7 @@ namespace FirstCatering.BackService.Data
             using (var serviceScope = serviceProvider
                 .GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                var context = serviceScope.ServiceProvider.GetService<DataBaseContext>();
+                var context = serviceScope.ServiceProvider.GetService<DatabaseContext>();
 
                 context.Database.EnsureCreated();
 

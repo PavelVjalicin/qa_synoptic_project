@@ -4,19 +4,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using FirstCatering.BackService.Data;
-using FirstCatering.BackService.Models;
+using FirstCateringLtd.BackService.Data;
+using FirstCateringLtd.BackService.Models;
 using System.Text.RegularExpressions;
 
-namespace FirstCatering.BackService.Controllers
+namespace FirstCateringLtd.BackService.Controllers
 {
 
     [Route("api/[controller]")]
-    public class IdCardController : Controller
+    public class EmployeeController : Controller
     {
 
-        DataBaseContext _context;
-        public IdCardController(DataBaseContext context)
+        DatabaseContext _context;
+        public EmployeeController(DatabaseContext context)
         {
             _context = context;
         }
@@ -77,8 +77,6 @@ namespace FirstCatering.BackService.Controllers
 
             if (existingEmployee != null) return BadRequest("Employee with this card id already exists");
 
-            
-
             var employee = new Employee(employeeNoPin);
 
             _context.Employees.Add(employee);
@@ -133,5 +131,34 @@ namespace FirstCatering.BackService.Controllers
 
             return NoContent();
         }
-	}
+
+        //Credit functions
+
+        [HttpGet("credit/{cardID}")]
+        [ProducesResponseType(typeof(decimal), 200)]
+        [ProducesResponseType(404)]
+        public IActionResult GetCredit(string cardID)
+        {
+            var employee = _context.Employees.Find(cardID);
+            if (employee == null) return NotFound("User with this card id doesn't exist.");
+
+            return Ok(employee.Credit);
+        }
+
+        [HttpPut("credit/{cardID}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public IActionResult PutCredit(string cardID, [FromBody]decimal newCreditAmount)
+        {
+            var employee = _context.Employees.Find(cardID);
+            if (employee == null) return NotFound("User with this card id doesn't exist.");
+
+            employee.Credit = newCreditAmount;
+
+            _context.Employees.Update(employee);
+            _context.SaveChanges();
+
+            return Ok();
+        }
+    }
 }
