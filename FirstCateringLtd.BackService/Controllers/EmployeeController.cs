@@ -14,20 +14,16 @@ namespace FirstCateringLtd.BackService.Controllers
     [Route("api/[controller]")]
     public class EmployeeController : Controller
     {
-
+        //Initialising database context to be used with the controller
+        //DatabaseContext is injected using dependancy injection by ASP.NET Core Framework
+        //DatabaseContext outlines the structure of the database without a specific database type implementation
         DatabaseContext _context;
         public EmployeeController(DatabaseContext context)
         {
             _context = context;
         }
 
-        private bool cardIdIsValid(string cardId)
-        {
-            Regex r = new Regex("^[a-zA-Z0-9]*$");
-            return r.IsMatch(cardId);
-        }
-
-        // GET api/IdCard
+        // GET api/Employee
         // Returns array of all employees
         [HttpGet]
         [ProducesResponseType(typeof(List<Employee>), 200)]
@@ -38,11 +34,11 @@ namespace FirstCateringLtd.BackService.Controllers
 
 
 
-        // Returns an employee from cardId
 
+        // Returns an employee from cardId
         // Returns 200 Status code with employee data
-        // Returns 404 status code with error message if employee not found
-        // GET api/IdCard/:id
+        // Returns 404 status code with error message if employee was not found
+        // GET api/Employee/{cardId}
         [HttpGet("{cardId}")]
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
@@ -57,27 +53,28 @@ namespace FirstCateringLtd.BackService.Controllers
                 return NotFound("User must register this card before proceeding.");
             }
         }
-        
+
         // Adds an employee with credentials
         // Returns 200 Status code on completion.
-        // Returns 400 Status code if employee with this cardID already exists.
-        // POST api/IdCard/
-        // Body must contain EmployeeNoPin class fields.
+        // Returns 400 Status code if employee with this cardId already exists.
+        // Body must contain EmployeeInputData class fields.
+        // POST api/Employee
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public IActionResult Post([FromBody]EmployeeInputData employeeNoPin)
+        public IActionResult Post([FromBody]EmployeeInputData employeeInputData)
         {   
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var existingEmployee = _context.Employees.Find(employeeNoPin.CardIdNumber);
+            //Checking the databse if employee with cardId already exists.
+            var existingEmployee = _context.Employees.Find(employeeInputData.CardIdNumber);
 
             if (existingEmployee != null) return BadRequest("Employee with this card id already exists");
 
-            var employee = new Employee(employeeNoPin);
+            var employee = new Employee(employeeInputData);
 
             _context.Employees.Add(employee);
 
@@ -86,29 +83,32 @@ namespace FirstCateringLtd.BackService.Controllers
             return Ok();
         }
 
-        
+
         //Replaces the employee with new values
-        //PUT api/IdCard
-        //Body request to have fields of class EmployeeNoPin
+        //Returns 200 if employee was successfully updated
+        //Returns 400 if request body was filled in not in a right way
+        //Returns 404 if employee was not found
+        //Body request to have fields of class EmployeeInputData
+        //PUT api/Employee
         [HttpPut]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult Put( [FromBody] EmployeeInputData employeeNoPin)
+        public IActionResult Put( [FromBody] EmployeeInputData employeeInputData)
         { 
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var employee = _context.Employees.Find(employeeNoPin.CardIdNumber);
+            var employee = _context.Employees.Find(employeeInputData.CardIdNumber);
 
             if(employee == null)
             {
                 return NotFound("No employee found with this card id");
             }
 
-            employee.Update(employeeNoPin);
+            employee.Update(employeeInputData);
 
             _context.Employees.Update(employee);
             _context.SaveChanges();
@@ -116,10 +116,12 @@ namespace FirstCateringLtd.BackService.Controllers
             return Ok();
         }
 
-        // Deletes ID card information and employee data by card ID        
-        // DELETE api/IdCard/:id
+        // Deletes ID card information and employee data by card ID       
+        //Returns 204 if evertyhing went well
+        //Returns 400 if no employee was found by cardId
+        // DELETE api/Employee/:id
         [HttpDelete("{cardId}")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         public IActionResult Delete(string cardId) {
             var employee = _context.Employees.Find(cardId);
@@ -134,7 +136,11 @@ namespace FirstCateringLtd.BackService.Controllers
 
         //Credit functions
 
-        [HttpGet("credit/{cardID}")]
+        //Returns a current status of employees credit based on cardId
+        //Returns 200 status code with decimal number of employees current credit
+        //Returns 404 status code if cardId was not found in the database
+        //GET api/Employee/credit/{cardId}
+        [HttpGet("credit/{cardId}")]
         [ProducesResponseType(typeof(decimal), 200)]
         [ProducesResponseType(404)]
         public IActionResult GetCredit(string cardID)
@@ -145,11 +151,22 @@ namespace FirstCateringLtd.BackService.Controllers
             return Ok(employee.Credit);
         }
 
-        [HttpPut("credit/{cardID}")]
+        //Replaces the employee's credit with new values
+        //Returns 200 if employee's credit was successfully updated
+        //Returns 400 if request body was filled in not in a right way
+        //Returns 404 if employee was not found
+        //Body request to have fields of class EmployeeInputData
+        //PUT api/Employee
+        [HttpPut("credit/{cardId}")]
         [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public IActionResult PutCredit(string cardID, [FromBody]decimal newCreditAmount)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var employee = _context.Employees.Find(cardID);
             if (employee == null) return NotFound("User with this card id doesn't exist.");
 

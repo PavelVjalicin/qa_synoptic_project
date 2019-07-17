@@ -25,12 +25,13 @@ namespace FirstCateringLtd.BackService
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
-		{
-			//services.AddTransient<Models.Repository>();
+		{	
 			services.AddMvc();
 
-      services.AddDbContext<DatabaseContext>(options=> options.UseSqlite("Data Source=CateringDatabase.db"));
+            //Adds a db context option for Sqlite
+            services.AddDbContext<DatabaseContext>(options=> options.UseSqlite("Data Source=CateringDatabase.db"));
 
+            // Generates swagger json documentation file
 			services.AddSwaggerGen(options =>
 					options.SwaggerDoc("v1", new Info { Title = "First Catering Ltd", Version = "v1" })
 			);
@@ -44,8 +45,8 @@ namespace FirstCateringLtd.BackService
 
 			if (env.IsDevelopment() || env.IsStaging())
 			{
-
-				app.UseSwaggerUI(options =>
+                // Initialises swagger API Documentation at http://{host}/swagger
+                app.UseSwaggerUI(options =>
 						options.SwaggerEndpoint("/swagger/v1/swagger.json", "First Catering Ltd v1")
 				);
 
@@ -58,6 +59,7 @@ namespace FirstCateringLtd.BackService
 
 			app.UseMvc();
 
+            // Creates built-in database.
 			DatabaseContext.SeedData(app.ApplicationServices);
 
 		}
