@@ -153,7 +153,7 @@ namespace FirstCateringLtd.BackService.Controllers
 
         //Replaces the employee's credit with new values
         //Returns 200 if employee's credit was successfully updated
-        //Returns 400 if request body was filled in not in a right way
+        //Returns 400 if request body is in invalid format
         //Returns 404 if employee was not found
         //Body request to have fields of class EmployeeInputData
         //PUT api/Employee

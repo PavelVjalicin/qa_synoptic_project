@@ -12,6 +12,8 @@ using Xunit;
 
 namespace FirstCateringLtd.Tests
 {
+    //Used for testing REST API Service
+    //The descriptions of tests are provided in the Design word document "Test Documentation" section.
     public class FunctionalityTests
     {
         [Fact]
@@ -139,8 +141,10 @@ namespace FirstCateringLtd.Tests
             //arrange
             var _dbContext = AllocateInMemoryDatabaseContext("testDB4");
             var controller = new EmployeeController(_dbContext);
+
             //act
             var result = controller.GetCredit("invalidCardId");
+
             //assert
             var notFound = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal("User with this card id doesn't exist.", notFound.Value);
@@ -166,9 +170,8 @@ namespace FirstCateringLtd.Tests
             _dbContext.SaveChanges();
 
             var controller = new EmployeeController(_dbContext);
+
             //act
-
-
             var putResult = controller.PutCredit(employee.CardIdNumber,255.55m);
             var getResult = controller.GetCredit(employee.CardIdNumber);
 
@@ -178,6 +181,8 @@ namespace FirstCateringLtd.Tests
             Assert.Equal(255.55m, getOkResult.Value);
         }
 
+        //Used to allocate an in-memory database context
+        //dbName string is used to assign a specific database name that will remain persistant through the whole testing process
         private DatabaseContext AllocateInMemoryDatabaseContext(string dbName)
         {
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
@@ -185,6 +190,8 @@ namespace FirstCateringLtd.Tests
             return new DatabaseContext(optionsBuilder.Options);
         }
 
+        //Validates Model with ORM based on DataAnnotations (Data type constraints) provided on the Model fields
+        //Expected to return a validation error from Model provided for testing purposes. Returns null if validation passed, breaking the test.
         private ValidationResult GetModelError(object model)
         {
             var validationResults = new List<ValidationResult>();

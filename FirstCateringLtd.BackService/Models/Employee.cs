@@ -11,9 +11,10 @@ namespace FirstCateringLtd.BackService.Models
 
         public Employee() { }
 
-        public Employee(EmployeeInputData employeeNoPin)
+        //Constructor used to create an Employee instance from EmployeeInputData that we recieve from client side
+        public Employee(EmployeeInputData employeeInputData)
         {
-            Update(employeeNoPin);
+            Update(employeeInputData);
             this.Credit = 0;
         }
 
@@ -33,10 +34,14 @@ namespace FirstCateringLtd.BackService.Models
         }
 
         [Required]
+        [MinLength(4)]
+        [MaxLength(4)]
         public string PinNumber { get; private set; }
 
+        //Login behind converting card ID string to pin code
         private string GetPinNumberFromCardId(string cardIdNumber)
         {
+            //Takes 4 last digits of card id
             var pin = cardIdNumber.Substring(cardIdNumber.Length - 4);
             return pin;
         }

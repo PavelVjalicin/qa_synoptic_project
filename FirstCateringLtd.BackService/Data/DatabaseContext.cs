@@ -13,8 +13,12 @@ namespace FirstCateringLtd.BackService.Data
 
 		public DatabaseContext(){}
 
+        //Employees data table
 		public DbSet<Employee> Employees { get; set; }
 
+
+        //Generates a database based on DatabaseContext structure.
+        //Can be used to add seed data to initial database generation.
         public static void SeedData(IServiceProvider serviceProvider)
         {
 
